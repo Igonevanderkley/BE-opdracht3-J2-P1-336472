@@ -28,6 +28,10 @@ class Database
         $this->statement = $this->dbHandler->prepare($sql);
     }
 
+    public function bind($param, $value) {
+        $this->statement->bindValue($param, $value);
+    }
+
     public function resultSet()
     {
         $this->statement->execute();

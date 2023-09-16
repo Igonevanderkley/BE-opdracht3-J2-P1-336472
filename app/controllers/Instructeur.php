@@ -19,36 +19,50 @@ class Instructeur extends BaseController
             /**
              * Datum in het juiste formaat gezet
              */
+            /**
+             * Haal alle instructeurs op uit de database (model)
+             */
+            $instructeurs = $this->instructeurModel->getInstructeurs();
+
+            $aantalInstructeurs = sizeof($instructeurs);
+
+
             $date = date_create($instructeur->DatumInDienst);
             $formatted_date = date_format($date, 'd-m-Y');
-
+            
+ 
             $rows .= "<tr>
                         <td>$instructeur->Voornaam</td>
                         <td>$instructeur->Tussenvoegsel</td>
                         <td>$instructeur->Achternaam</td>
                         <td>$instructeur->Mobiel</td>
                         <td>$formatted_date</td>            
-                        <td>$instructeur->AantalSterren</td>            
+                        <td>$instructeur->AantalSterren</td>  
+
+                                  
                         <td>
                             <a href='" . URLROOT . "/instructeur/overzichtvoertuigen/$instructeur->Id'>
                                 <i class='bi bi-car-front'></i>
                             </a>
-                        </td>            
+                        </td>
+                       
+
                       </tr>";
         }
-        
+
         $data = [
             'title' => 'Instructeurs in dienst',
+            'aantalInstructeurs' => $aantalInstructeurs,
             'rows' => $rows
         ];
 
         $this->view('Instructeur/overzichtinstructeur', $data);
     }
 
-    public function overzichtVoertuigen($Id)
+    public function overzichtVoertuigen($instructeurId)
     {
 
-        $instructeurInfo = $this->instructeurModel->getInstructeurById($Id);
+        $instructeurInfo = $this->instructeurModel->getInstructeurById($instructeurId);
 
         // var_dump($instructeurInfo);
         $naam = $instructeurInfo->Voornaam . " " . $instructeurInfo->Tussenvoegsel . " " . $instructeurInfo->Achternaam;
@@ -58,7 +72,7 @@ class Instructeur extends BaseController
         /**
          * We laten de model alle gegevens ophalen uit de database
          */
-        $result = $this->instructeurModel->getToegewezenVoertuigen($Id);
+        $result = $this->instructeurModel->getToegewezenVoertuigen($instructeurId);
 
 
         $tableRows = "";
@@ -84,6 +98,7 @@ class Instructeur extends BaseController
                 $date_formatted = date_format(date_create($voertuig->Bouwjaar), 'd-m-Y');
 
                 $tableRows .= "<tr>
+                                    <td>$voertuig->Id</td>
                                     <td>$voertuig->TypeVoertuig</td>
                                     <td>$voertuig->Type</td>
                                     <td>$voertuig->Kenteken</td>
@@ -91,14 +106,20 @@ class Instructeur extends BaseController
                                     <td>$voertuig->Brandstof</td>
                                     <td>$voertuig->RijbewijsCategorie</td>   
                                     <td>
-                                        <a href='" . URLROOT . "'>
-                                    lol
-                                        </a>
-                                    </td>         
+                                    <a href='" . URLROOT . "/instructeur/updateVoertuig/$voertuig->Id/$instructeurId'>
+                                    <img src = '/public/img/b_edit.png'>
+                                    </a> 
+                                    </td>    
+                                    
+                                    <td>
+                                    <a href='" . URLROOT . "/instructeur/nietToegewezenVoertuigen'>
+                                    +
+                                    </a> 
+                                    </td> 
                             </tr>";
             }
         }
-        
+
 
         $data = [
             'title'     => 'Door instructeur gebruikte voertuigen',
@@ -109,7 +130,54 @@ class Instructeur extends BaseController
         ];
 
         $this->view('Instructeur/overzichtVoertuigen', $data);
+    }
 
+    function updateVoertuig($Id, $instructeurId)
+    {
+
+        $voertuigInfo = $this->instructeurModel->getToegewezenVoertuig($Id, $instructeurId);
+
+        $data = [
+            'title' => 'Update Voertuig',
+            'voertuigId' => $Id,
+            'instructeurId' => $instructeurId,
+            'voertuigInfo' => $voertuigInfo
+
+        ];
+
+        $this->view('Instructeur/updateVoertuig', $data);
+    }
+    function updateVoertuigSave($instructeurId, $voertuigId)
+    {
+        $this->instructeurModel->updateVoertuig($voertuigId);
+        $this->instructeurModel->updateInstructeur($voertuigId);
+        $this->overzichtVoertuigen($instructeurId); 
 
     }
+
+    // function updateInstructeur() {
+    //     $instructeurs = $this->instructeurModel->getInstructeurs();
+
+    //     $data = [
+    //         'instructeurs' => $instructeurs
+    //     ];
+
+    //     $this->view('Instructeur/updateVoertuig', $data);
+        
+
+    // }
+
+     function overzichtNietToegewezenVoertuig() {
+
+        $nietToegewezenVoertuigen = $this->instructeurModel->getNietToegewezenVoertuigen()();
+
+        var_dump($nietToegewezenVoertuigen);
+
+        $data = [
+            'result' => $nietToegewezenVoertuigen
+        ];
+
+        $this->view('Instructeur/overzichtNietToegewezenVoertuig', $data);
+    }
 }
+

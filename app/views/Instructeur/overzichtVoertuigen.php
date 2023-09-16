@@ -31,6 +31,7 @@
 
     <table>
         <thead>
+            <th>Id</th>
             <th>TypeVoertuig</th>
             <th>Type</th>
             <th>Kenteken</th>
@@ -38,6 +39,7 @@
             <th>Brandstof</th>
             <th>RijbewijsCategorie</th>
             <th>Wijzig</th>
+            <th>Toevoegen</th>
         </thead>
         <tbody>
             <?= $data['tableRows']; ?>
