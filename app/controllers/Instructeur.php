@@ -171,7 +171,7 @@ class Instructeur extends BaseController
 
         $nietToegewezenVoertuigen = $this->instructeurModel->getNietToegewezenVoertuigen()();
 
-        var_dump($nietToegewezenVoertuigen);
+        // var_dump($nietToegewezenVoertuigen);
 
         $data = [
             'result' => $nietToegewezenVoertuigen
