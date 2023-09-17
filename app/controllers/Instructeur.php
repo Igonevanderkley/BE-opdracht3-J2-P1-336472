@@ -133,6 +133,9 @@ class Instructeur extends BaseController
     {
         $this->instructeurModel->updateVoertuig($voertuigId);
         $this->instructeurModel->updateInstructeur($voertuigId);
+        $this->instructeurModel->updateNietToegewezenInstructeur($instructeurId, $voertuigId);
+
+
         $this->overzichtVoertuigen($instructeurId); 
 
     }
@@ -142,11 +145,11 @@ class Instructeur extends BaseController
 
         $nietToegewezenVoertuigen = $this->instructeurModel->getNietToegewezenVoertuigen();
         $instructeurInfo = $this->instructeurModel->getInstructeurById($instructeurId);
+        // $voertuigId = $this->instructeurModel->getVoertuigId();
 
         $naam = $instructeurInfo->Voornaam . " " . $instructeurInfo->Tussenvoegsel . " " . $instructeurInfo->Achternaam;
         $datumInDienst = $instructeurInfo->DatumInDienst;
         $aantalSterren = $instructeurInfo->AantalSterren;
-
 
         $tableRows = "";
         if (empty($nietToegewezenVoertuigen)) {
@@ -165,20 +168,20 @@ class Instructeur extends BaseController
 
                 $tableRows .= "<tr>
                                   
-                                    <td>$voertuig->Typevoertuig</td>
+                                    <td>$voertuig->TypeVoertuig</td>
                                     <td>$voertuig->Type</td>
                                     <td>$voertuig->Kenteken</td>
                                     <td>$date_formatted</td>
                                     <td>$voertuig->Brandstof</td>
                                     <td>$voertuig->RijbewijsCategorie</td>
                                     <td>
-                                    <a href='" . URLROOT . "/instructeur'>
-                                   +
+                                    <a href='" . URLROOT . "/instructeur/toevoegenInstructeur/$instructeurId/$voertuig->Id'>
+                                    <img src = '/public/img/b_add.webp'>
                                    </a> 
                                    </td>
 
                                     <td>
-                                     <a href='" . URLROOT . "/instructeur'>
+                                     <a href='" . URLROOT . "/instructeur/updateNietToegewezenVoertuig/$instructeurId/$voertuig->Id'>
                                     <img src = '/public/img/b_edit.png'>
                                     </a> 
                                     </td>
@@ -201,6 +204,25 @@ class Instructeur extends BaseController
     
 
         $this->view('Instructeur/overzichtNietToegewezenVoertuig', $data);
+
+    }
+
+
+    function updateNietToegewezenVoertuig($instructeurId, $voertuigId) {
+        $voertuigInfo = $this->instructeurModel->getNietToegewezenVoertuig($instructeurId, $voertuigId);
+
+        $data = [
+            'title' => 'Update Voertuig',
+            'voertuigId' => $voertuigId,
+            'instructeurId' => $instructeurId,
+            'voertuigInfo' => $voertuigInfo
+
+        ];
+
+        $this->view('Instructeur/UpdateVoertuig', $data);
+
+
+
 
     }
 }
