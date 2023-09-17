@@ -97,7 +97,7 @@ class InstructeurModel
         return $this->db->single();
     }
 
-        function updateVoertuig($id) 
+    function updateVoertuig($id)
     {
         $sql = "UPDATE Voertuig AS Voertuig
         JOIN TypeVoertuig AS TypeVoertuig
@@ -115,7 +115,8 @@ class InstructeurModel
         return $this->db->resultSet();
     }
 
-    function updateInstructeur($id) {
+    function updateInstructeur($id)
+    {
         $sql = "UPDATE VoertuigInstructeur
                 SET InstructeurId = :instructeurid
                 WHERE voertuigId = $id";
@@ -123,10 +124,11 @@ class InstructeurModel
         $this->db->query($sql);
         $this->db->bind(':instructeurid', $_POST['instructeur']);
         return $this->db->resultSet();
-    }  
+    }
 
-    function getNietToegewezenVoertuigen() {
-        $sql = "SELECT V.Type, V.Kenteken, V.Bouwjaar, V.Brandstof, TV.Typevoertuig, TV.RijbewijsCategorie 
+    function getNietToegewezenVoertuigen()
+    {
+        $sql = "SELECT V.Id, V.Type, V.Kenteken, V.Bouwjaar, V.Brandstof, TV.TypeVoertuig, TV.RijbewijsCategorie 
                 FROM Voertuig V
                 LEFT JOIN VoertuigInstructeur VI
                 ON V.Id = VI.VoertuigId
@@ -134,8 +136,35 @@ class InstructeurModel
                 ON TV.Id = V.TypeVoertuigId
                 WHERE InstructeurId IS NULL";
 
-    $this->db->query($sql);
-    return $this->db->resultSet();    }
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
+
+    function getNietToegewezenVoertuig($instructeurId, $voertuigId) {
+        $sql = "SELECT V.Id, V.Type, V.Kenteken, V.Bouwjaar, V.Brandstof, TV.TypeVoertuig, TV.RijbewijsCategorie 
+                FROM Voertuig V
+                LEFT JOIN VoertuigInstructeur VI
+                ON V.Id = VI.VoertuigId
+                INNER JOIN TypeVoertuig TV
+                ON TV.Id = V.TypeVoertuigId
+                WHERE VI.InstructeurId IS NULL AND V.Id = $voertuigId";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
 
 
+    function updateNietToegewezenInstructeur($voertuigId) {
+        $sql = "UPDATE VoertuigInstructeur
+                LEFT JOIN Voertuig 
+                ON Voertuig.Id = VoertuigInstructeur.VoertuigId
+                SET VoertuigInstructeur.InstructeurId = :instructeurid
+                WHERE VoertuigInstructeur.instructeurId IS NULL AND Voertuig.Id = :voertuigid";
+    
+        $this->db->query($sql);
+        $this->db->bind(':instructeurid', $_POST['instructeur']);
+        $this->db->bind(':voertuigid', $voertuigId); 
+        return $this->db->resultSet();
+    }
+    
 }
