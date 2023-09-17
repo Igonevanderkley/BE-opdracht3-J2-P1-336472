@@ -26,8 +26,11 @@
                 <th>Aantal Sterren</th>
                 <td><?= $data['aantalSterren']; ?></td>
             </tr>
-        </tbody>
+        </tbody
+        >
     </table>
+    
+    <?= $data['toevoegen']; ?>
 
     <table>
         <thead>
@@ -39,7 +42,6 @@
             <th>Brandstof</th>
             <th>RijbewijsCategorie</th>
             <th>Wijzig</th>
-            <th>Toevoegen</th>
         </thead>
         <tbody>
             <?= $data['tableRows']; ?>

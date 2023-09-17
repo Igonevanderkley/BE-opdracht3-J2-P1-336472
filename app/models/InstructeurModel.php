@@ -123,18 +123,19 @@ class InstructeurModel
         $this->db->query($sql);
         $this->db->bind(':instructeurid', $_POST['instructeur']);
         return $this->db->resultSet();
-    }
+    }  
 
     function getNietToegewezenVoertuigen() {
-        $sql = "SELECT Id, Kenteken, Type, Bouwjaar, Brandstof, Typevoertuig
-                FROM Voertuig as VOER
-                INNER JOIN VoertuigInstructeur as VI 
-                ON VOER.Id = VoertuigInstructeur = VI.VoertuigId
-                WHERE VOER.Id IS NULL";
+        $sql = "SELECT V.Type, V.Kenteken, V.Bouwjaar, V.Brandstof, TV.Typevoertuig, TV.RijbewijsCategorie 
+                FROM Voertuig V
+                LEFT JOIN VoertuigInstructeur VI
+                ON V.Id = VI.VoertuigId
+                INNER JOIN TypeVoertuig TV
+                ON TV.Id = V.TypeVoertuigId
+                WHERE InstructeurId IS NULL";
 
     $this->db->query($sql);
-    return $this->db->single();
-    }
+    return $this->db->resultSet();    }
 
 
 }
