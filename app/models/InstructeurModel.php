@@ -140,7 +140,7 @@ class InstructeurModel
         return $this->db->resultSet();
     }
 
-    function getNietToegewezenVoertuig($instructeurId, $voertuigId) {
+    function getNietToegewezenVoertuig($voertuigId) {
         $sql = "SELECT V.Id, V.Type, V.Kenteken, V.Bouwjaar, V.Brandstof, TV.TypeVoertuig, TV.RijbewijsCategorie 
                 FROM Voertuig V
                 LEFT JOIN VoertuigInstructeur VI
@@ -155,15 +155,14 @@ class InstructeurModel
 
 
     function updateNietToegewezenInstructeur($voertuigId) {
-        $sql = "UPDATE VoertuigInstructeur
-                LEFT JOIN Voertuig 
-                ON Voertuig.Id = VoertuigInstructeur.VoertuigId
-                SET VoertuigInstructeur.InstructeurId = :instructeurid
-                WHERE VoertuigInstructeur.instructeurId IS NULL AND Voertuig.Id = :voertuigid";
+        $sql = "INSERT INTO VoertuigInstructeur (InstructeurId, VoertuigId, DatumToekenning, IsActief, Opmerkingen, DatumAangemaakt, DatumGewijzigd) 
+        VALUES (:instructeurid, :voertuigId, SYSDATE(6), 1, NULL, SYSDATE(6), SYSDATE(6))";
     
         $this->db->query($sql);
         $this->db->bind(':instructeurid', $_POST['instructeur']);
-        $this->db->bind(':voertuigid', $voertuigId); 
+        $this->db->bind(':voertuigId', $voertuigId);
+
+        // $this->db->bind(':voertuigid', $voertuigId); 
         return $this->db->resultSet();
     }
     
