@@ -133,7 +133,7 @@ class Instructeur extends BaseController
     {
         $this->instructeurModel->updateVoertuig($voertuigId);
         $this->instructeurModel->updateInstructeur($voertuigId);
-        $this->instructeurModel->updateNietToegewezenInstructeur($instructeurId, $voertuigId);
+        $this->instructeurModel->updateNietToegewezenInstructeur($voertuigId);
 
 
         $this->overzichtVoertuigen($instructeurId); 
@@ -209,7 +209,7 @@ class Instructeur extends BaseController
 
 
     function updateNietToegewezenVoertuig($instructeurId, $voertuigId) {
-        $voertuigInfo = $this->instructeurModel->getNietToegewezenVoertuig($instructeurId, $voertuigId);
+        $voertuigInfo = $this->instructeurModel->getNietToegewezenVoertuig($voertuigId);
 
         $data = [
             'title' => 'Update Voertuig',
