@@ -13,6 +13,8 @@ class Instructeur extends BaseController
     {
         $result = $this->instructeurModel->getInstructeurs();
 
+        $allVehicles = "<a href='" . URLROOT . "/instructeur/alleVoertuigen'/>alle voertuigen</a>";
+
         $rows = "";
         foreach ($result as $instructeur) {
 
@@ -48,7 +50,8 @@ class Instructeur extends BaseController
         $data = [
             'title' => 'Instructeurs in dienst',
             'aantalInstructeurs' => $aantalInstructeurs,
-            'rows' => $rows
+            'rows' => $rows,
+            'allVehicles' => $allVehicles
         ];
 
         $this->view('Instructeur/overzichtinstructeur', $data);
@@ -266,6 +269,7 @@ class Instructeur extends BaseController
     function alleVoertuigen()
     {
         $alleVoertuigen = $this->instructeurModel->getAllVehicles();
+
 
         $tableRows = "";
         if (empty($alleVoertuigen)) {
