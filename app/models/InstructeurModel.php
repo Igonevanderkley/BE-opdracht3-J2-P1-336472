@@ -140,7 +140,8 @@ class InstructeurModel
         return $this->db->resultSet();
     }
 
-    function getNietToegewezenVoertuig($voertuigId) {
+    function getNietToegewezenVoertuig($voertuigId)
+    {
         $sql = "SELECT V.Id, V.Type, V.Kenteken, V.Bouwjaar, V.Brandstof, TV.TypeVoertuig, TV.RijbewijsCategorie 
                 FROM Voertuig V
                 LEFT JOIN VoertuigInstructeur VI
@@ -154,10 +155,11 @@ class InstructeurModel
     }
 
 
-    function updateNietToegewezenInstructeur($voertuigId) {
+    function updateNietToegewezenInstructeur($voertuigId)
+    {
         $sql = "INSERT INTO VoertuigInstructeur (InstructeurId, VoertuigId, DatumToekenning, IsActief, Opmerkingen, DatumAangemaakt, DatumGewijzigd) 
         VALUES (:instructeurid, :voertuigId, SYSDATE(6), 1, NULL, SYSDATE(6), SYSDATE(6))";
-    
+
         $this->db->query($sql);
         $this->db->bind(':instructeurid', $_POST['instructeur']);
         $this->db->bind(':voertuigId', $voertuigId);
@@ -165,5 +167,55 @@ class InstructeurModel
         // $this->db->bind(':voertuigid', $voertuigId); 
         return $this->db->resultSet();
     }
-    
+
+    function getVoertuigInstructeur($id)
+    {
+        $sql = "SELECT instructeurid as Id FROM voertuigInstructeur
+        where voertuigid = ?";
+
+        $this->db->query($sql);
+        $this->db->bind(1, $id);
+        return $this->db->single();
+    }
+
+    function unassignInstructeur($voertuigId, $instructeurId)
+    {
+        $sql = "DELETE FROM VoertuigInstructeur WHERE InstructeurId = $instructeurId AND VoertuigId = $voertuigId";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
+
+    function deleteVoertuig($voertuigId)
+    {
+        $sql = "DELETE FROM Voertuig WHERE Id = $voertuigId";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
+
+    function getAllVehicles()
+    {
+        $sql = "SELECT v.Id, tv.TypeVoertuig, v.Type, v.Kenteken, v.Bouwjaar, v.Brandstof, tv.Rijbewijscategorie,
+            CONCAT(i.Voornaam, ' ', i.Tussenvoegsel, ' ', i.Achternaam) AS InstructeurNaam
+            FROM Voertuig v
+            LEFT JOIN TypeVoertuig tv ON v.TypeVoertuigId = tv.Id
+            LEFT JOIN VoertuigInstructeur vi ON v.Id = vi.VoertuigId
+            LEFT JOIN Instructeur i ON vi.InstructeurId = i.Id";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
+
+    function deleteVoertuigfromAll($voertuigId)
+    {
+        $sql = "DELETE FROM VoertuigInstructeur
+        WHERE VoertuigId = $voertuigId;
+        
+        DELETE FROM Voertuig
+        WHERE Id = $voertuigId;";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
 }
