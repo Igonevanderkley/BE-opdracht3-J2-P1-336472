@@ -15,7 +15,7 @@ class Instructeur extends BaseController
 
         $rows = "";
         foreach ($result as $instructeur) {
-   
+
             $instructeurs = $this->instructeurModel->getInstructeurs();
 
             $aantalInstructeurs = sizeof($instructeurs);
@@ -23,9 +23,9 @@ class Instructeur extends BaseController
 
             $date = date_create($instructeur->DatumInDienst);
             $formatted_date = date_format($date, 'd-m-Y');
-            
 
- 
+
+
             $rows .= "<tr>
                         <td>$instructeur->Voornaam</td>
                         <td>$instructeur->Tussenvoegsel</td>
@@ -70,14 +70,14 @@ class Instructeur extends BaseController
 
         $tableRows = "";
         if (empty($result)) {
-    
+
             $tableRows = "<tr>
                             <td colspan='6'>
                                 Er zijn op dit moment nog geen voertuigen toegewezen aan deze instructeur
                             </td>
                           </tr>";
         } else {
-  
+
             foreach ($result as $voertuig) {
 
 
@@ -90,10 +90,15 @@ class Instructeur extends BaseController
                                     <td>$voertuig->Kenteken</td>
                                     <td>$date_formatted</td>
                                     <td>$voertuig->Brandstof</td>
-                                    <td>$voertuig->RijbewijsCategorie</td>   
+                                    <td>$voertuig->RijbewijsCategorie</td> 
                                     <td>
                                     <a href='" . URLROOT . "/instructeur/updateVoertuig/$voertuig->Id/$instructeurId'>
                                     <img src = '/public/img/b_edit.png'>
+                                    </a> 
+                                    </td>   
+                                    <td>
+                                    <a href='" . URLROOT . "/instructeur/unassignInstructeur/$voertuig->Id/$instructeurId'>
+                                    <img src = '/public/img/b_drop.png'>
                                     </a> 
                                     </td>    
                                     
@@ -108,8 +113,13 @@ class Instructeur extends BaseController
             'naam'      => $naam,
             'datumInDienst' => $datumInDienst,
             'aantalSterren' => $aantalSterren,
-            'toevoegen' => $toevoegen
+            'toevoegen' => $toevoegen,
+            'deleteMessage' => isset($GLOBALS['deleted']) ? 'Het door u geselecteerde voertuig is verwijderd' : null,
         ];
+
+        if (isset($GLOBALS['deleted'])) {
+            header('Refresh:3; url=/Instructeur/overzichtVoertuigen/' . $instructeurId);
+        }
 
         $this->view('Instructeur/overzichtVoertuigen', $data);
     }
@@ -131,16 +141,24 @@ class Instructeur extends BaseController
     }
     function updateVoertuigSave($instructeurId, $voertuigId)
     {
+        $toegewezen = $this->instructeurModel->getVoertuigInstructeur($voertuigId);
+
         $this->instructeurModel->updateVoertuig($voertuigId);
-        $this->instructeurModel->updateInstructeur($voertuigId);
-        $this->instructeurModel->updateNietToegewezenInstructeur($voertuigId);
+
+        if ($toegewezen) {
+            $this->instructeurModel->updateInstructeur($voertuigId);
+        } else {
+            $this->instructeurModel->updateNietToegewezenInstructeur($voertuigId);
+        }
+
+        // header('Location: Instructeur/overzichtVoertuigen');
 
 
-        $this->overzichtVoertuigen($instructeurId); 
-
+        $this->overzichtVoertuigen($instructeurId);
     }
 
-    function overzichtNietToegewezenVoertuigen($instructeurId) {
+    function overzichtNietToegewezenVoertuigen($instructeurId)
+    {
 
 
         $nietToegewezenVoertuigen = $this->instructeurModel->getNietToegewezenVoertuigen();
@@ -153,14 +171,15 @@ class Instructeur extends BaseController
 
         $tableRows = "";
         if (empty($nietToegewezenVoertuigen)) {
-    
+
             $tableRows = "<tr>
                             <td colspan='6'>
-                                Er zijn op dit moment nog geen beschikbare voertuigen
+                                Er zijn geen voertuigen beschikbaar op dit moment
+                    
                             </td>
                           </tr>";
         } else {
-  
+
             foreach ($nietToegewezenVoertuigen as $voertuig) {
 
 
@@ -175,17 +194,16 @@ class Instructeur extends BaseController
                                     <td>$voertuig->Brandstof</td>
                                     <td>$voertuig->RijbewijsCategorie</td>
                                     <td>
-                                    <a href='" . URLROOT . "/instructeur/toevoegenInstructeur/$instructeurId/$voertuig->Id'>
-                                    <img src = '/public/img/b_add.webp'>
-                                   </a> 
-                                   </td>
-
-                                    <td>
                                      <a href='" . URLROOT . "/instructeur/updateNietToegewezenVoertuig/$instructeurId/$voertuig->Id'>
                                     <img src = '/public/img/b_edit.png'>
                                     </a> 
                                     </td>
 
+                                    <td>
+                                    <a href='" . URLROOT . "/instructeur/deleteVoertuig/$instructeurId/$voertuig->Id'>
+                                   <img src = '/public/img/b_drop.png'>
+                                   </a> 
+                                   </td>
                                     
                             </tr>";
             }
@@ -198,17 +216,20 @@ class Instructeur extends BaseController
             'tableRows' => $tableRows,
             'naam'      => $naam,
             'datumInDienst' => $datumInDienst,
-            'aantalSterren' => $aantalSterren
+            'aantalSterren' => $aantalSterren,
+            'deleteMessage' => isset($GLOBALS['deleted']) ? 'Het door u geselecteerde voertuig is verwijderd' : null,
         ];
 
-    
+        if (isset($GLOBALS['deleted'])) {
+            header('Refresh:3; url=/Instructeur/overzichtNietToegewezenVoertuigen/' . $instructeurId);
+        }
 
         $this->view('Instructeur/overzichtNietToegewezenVoertuig', $data);
-
     }
 
 
-    function updateNietToegewezenVoertuig($instructeurId, $voertuigId) {
+    function updateNietToegewezenVoertuig($instructeurId, $voertuigId)
+    {
         $voertuigInfo = $this->instructeurModel->getNietToegewezenVoertuig($voertuigId);
 
         $data = [
@@ -220,10 +241,83 @@ class Instructeur extends BaseController
         ];
 
         $this->view('Instructeur/UpdateVoertuig', $data);
+    }
+
+    function unassignInstructeur($voertuigId, $instructeurId)
+    {
+        $this->instructeurModel->unassignInstructeur($voertuigId, $instructeurId);
+
+        $GLOBALS['deleted'] = true;
+
+        $this->overzichtVoertuigen($instructeurId);
+    }
+
+    function deleteVoertuig($instructeurId, $voertuigId)
+    {
+        $this->instructeurModel->deleteVoertuig($voertuigId);
+
+        $GLOBALS['deleted'] = true;
+
+        $this->overzichtNietToegewezenVoertuigen($instructeurId);
+    }
 
 
 
+    function alleVoertuigen()
+    {
+        $alleVoertuigen = $this->instructeurModel->getAllVehicles();
 
+        $tableRows = "";
+        if (empty($alleVoertuigen)) {
+
+            $tableRows = "<tr>
+                            <td colspan='6'>
+                                <div>Er zijn geen voertuigen beschikbaar op dit moment</div>
+                            </td>
+                          </tr>";
+        } else {
+
+            foreach ($alleVoertuigen as $voertuig) {
+
+
+                $date_formatted = date_format(date_create($voertuig->Bouwjaar), 'd-m-Y');
+
+                $tableRows .= "<tr>
+                                    <td>$voertuig->TypeVoertuig</td>
+                                    <td>$voertuig->Type</td>
+                                    <td>$voertuig->Kenteken</td>
+                                    <td>$date_formatted</td>
+                                    <td>$voertuig->Brandstof</td>
+                                    <td>$voertuig->Rijbewijscategorie</td>    
+                                    <td>$voertuig->InstructeurNaam</td>  
+                                    <td>
+                                    <a href='" . URLROOT . "/instructeur/deleteVoertuigFromAll/$voertuig->Id'>
+                                   <img src = '/public/img/b_drop.png'>
+                                   </a> 
+                                   </td> 
+                            </tr>";
+            }
+        }
+
+        $data = [
+            'tableRows' => $tableRows,
+            'title' => 'Alle voertuigen'
+        ];
+
+        $this->view('Instructeur/alleVoertuigen', $data);
+    }
+
+    function deleteVoertuigFromAll($voertuigId)
+    {
+        $this->instructeurModel->deleteVoertuigfromAll($voertuigId);
+
+        $this->view('Instructeur/deleteMessage');
+        
+        header('Refresh:3; url=/Instructeur/alleVoertuigen');
+    }
+
+    function deleteMessage()
+    {
+        $this->view('Instructeur/deleteMessage');
     }
 }
-
