@@ -136,7 +136,7 @@ class InstructeurModel
                 ON V.Id = VI.VoertuigId
                 INNER JOIN TypeVoertuig TV
                 ON TV.Id = V.TypeVoertuigId
-                WHERE InstructeurId IS NULL";
+                WHERE InstructeurId IS NULL OR VI.IsActief = 0";
 
         $this->db->query($sql);
         return $this->db->resultSet();
@@ -218,24 +218,46 @@ class InstructeurModel
         WHERE Id = $voertuigId;";
 
         $this->db->query($sql);
-        return $this->db->resultSet();
+        return $this->db->execute();
     }
 
-    function inactivate($instructeurId) {
+    function inactivate($instructeurId)
+    {
         $sql = "UPDATE Instructeur
         SET IsActief = 0, DatumGewijzigd = SYSDATE(6)
-        WHERE Id = $instructeurId";
+        WHERE Id = $instructeurId
+        ";
 
         $this->db->query($sql);
-        return $this->db->resultSet();
+        $this->db->execute();
+
+
+        $sql = "UPDATE voertuigInstructeur
+        SET IsActief = 0, DatumGewijzigd = SYSDATE(6)
+        WHERE InstructeurId = $instructeurId
+        ";
+
+        $this->db->query($sql);
+        $this->db->execute();
+
+
+        return $this->db->execute();
     }
 
-    function activate($instructeurId) {
+    function activate($instructeurId)
+    {
         $sql = "UPDATE Instructeur
         SET IsActief = 1, DatumGewijzigd = SYSDATE(6)
         WHERE Id = $instructeurId";
 
         $this->db->query($sql);
-        return $this->db->resultSet();
+        $this->db->execute();
+
+        $sql = "UPDATE voertuigInstructeur
+        SET IsActief = 0, DatumGewijzigd = SYSDATE(6)
+        WHERE InstructeurId = $instructeurId";
+
+        $this->db->query($sql);
+        $this->db->execute();
     }
 }
