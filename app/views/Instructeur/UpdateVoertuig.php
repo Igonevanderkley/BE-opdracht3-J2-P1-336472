@@ -17,7 +17,7 @@
 
         <label for="instructeur">instructeur:</label>
         <select name="instructeur" id="instructeur">
-            <option value="5" <?= $data['instructeurId'] == 5 ? "Selected" : "" ?>>Mohammed El Yassidi </option>
+            <option value="5" <?= $data['instructeurId'] == 5 ? "Selected" : "" ?>>Mohammed El Yassidi</option>
             <option value="4" <?= $data['instructeurId'] == 4 ? "Selected" : "" ?>>Bert van Sali</option>
             <option value="1" <?= $data['instructeurId'] == 1 ? "Selected" : "" ?>>Li Zhan</option>
             <option value="3" <?= $data['instructeurId'] == 3 ? "Selected" : "" ?>>Yoeri van Veen</option>

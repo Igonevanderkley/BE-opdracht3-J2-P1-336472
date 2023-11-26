@@ -32,7 +32,8 @@
         </tbody>
     </table>
 
-    <?= $data['toevoegen']; ?>
+
+    
 
 
 
