@@ -14,7 +14,6 @@
 
     <h3><u><?= $data['title']; ?></u></h3>
 
-
     <table>
         <tbody>
             <tr>
@@ -32,11 +31,7 @@
         </tbody>
     </table>
 
-
-    
-
-
-
+    <?= $data['toevoegen']; ?>
 
     <table>
         <thead>
