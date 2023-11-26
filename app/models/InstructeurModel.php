@@ -18,6 +18,7 @@ class InstructeurModel
                       ,Mobiel
                       ,DatumInDienst
                       ,AantalSterren
+                      ,IsActief
                 FROM  Instructeur
                 ORDER BY AantalSterren DESC";
 
@@ -89,6 +90,7 @@ class InstructeurModel
                       ,Achternaam
                       ,DatumInDienst
                       ,AantalSterren
+                      ,IsActief
                 FROM  Instructeur
                 WHERE Id = $Id";
 
@@ -214,6 +216,24 @@ class InstructeurModel
         
         DELETE FROM Voertuig
         WHERE Id = $voertuigId;";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
+
+    function inactivate($instructeurId) {
+        $sql = "UPDATE Instructeur
+        SET IsActief = 0, DatumGewijzigd = SYSDATE(6)
+        WHERE Id = $instructeurId";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
+
+    function activate($instructeurId) {
+        $sql = "UPDATE Instructeur
+        SET IsActief = 1, DatumGewijzigd = SYSDATE(6)
+        WHERE Id = $instructeurId";
 
         $this->db->query($sql);
         return $this->db->resultSet();
