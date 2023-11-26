@@ -22,11 +22,25 @@ class Instructeur extends BaseController
 
             $aantalInstructeurs = sizeof($instructeurs);
 
+            $instructeurVoornaam = ($instructeur->Voornaam);
+
 
             $date = date_create($instructeur->DatumInDienst);
             $formatted_date = date_format($date, 'd-m-Y');
 
+            $isactief = ($instructeur->IsActief);
 
+            if ($isactief == 0) {
+                $status = "
+                    <a href='" . URLROOT . "/instructeur/activate/$instructeur->Id'>
+                    <img src = '/public/img/bandaid.png'>
+                    </a>";
+            } else {
+                $status = "
+                    <a href='" . URLROOT . "/instructeur/inactivate/$instructeur->Id'>
+                    <img src = '/public/img/thumbsUp.png'>
+                 </a>";
+            }
 
             $rows .= "<tr>
                         <td>$instructeur->Voornaam</td>
@@ -42,6 +56,12 @@ class Instructeur extends BaseController
                                 <i class='bi bi-car-front'></i>
                             </a>
                         </td>
+
+                        <td>$status</td>
+
+     
+
+    
                        
 
                       </tr>";
@@ -51,8 +71,13 @@ class Instructeur extends BaseController
             'title' => 'Instructeurs in dienst',
             'aantalInstructeurs' => $aantalInstructeurs,
             'rows' => $rows,
-            'allVehicles' => $allVehicles
+            'allVehicles' => $allVehicles,
+            'activateMessage' => isset($GLOBALS['activated']) ? "$instructeurVoornaam is ziek/met verlof gemeld" : null,
         ];
+
+        if (isset($GLOBALS['activated'])) {
+            header('Refresh:3; url=/Instructeur/overzichtInstructeur');
+        }
 
         $this->view('Instructeur/overzichtinstructeur', $data);
     }
@@ -65,18 +90,26 @@ class Instructeur extends BaseController
         $naam = $instructeurInfo->Voornaam . " " . $instructeurInfo->Tussenvoegsel . " " . $instructeurInfo->Achternaam;
         $datumInDienst = $instructeurInfo->DatumInDienst;
         $aantalSterren = $instructeurInfo->AantalSterren;
+        $isActief = $instructeurInfo->IsActief;
 
         $toevoegen = "<a href='" . URLROOT . "/instructeur/overzichtNietToegewezenVoertuigen/$instructeurId'>Toevoegen Voertuig</a>";
 
         $result = $this->instructeurModel->getToegewezenVoertuigen($instructeurId);
 
-
         $tableRows = "";
+
         if (empty($result)) {
 
             $tableRows = "<tr>
                             <td colspan='6'>
                                 Er zijn op dit moment nog geen voertuigen toegewezen aan deze instructeur
+                            </td>
+                          </tr>";
+        } else if ($isActief == 0) {
+
+            $tableRows = "<tr>
+                            <td colspan='6'>
+                                Deze instructeur is momenteel met met verlof
                             </td>
                           </tr>";
         } else {
@@ -112,6 +145,7 @@ class Instructeur extends BaseController
 
         $data = [
             'title'     => 'Door instructeur gebruikte voertuigen',
+            'actief' => $isActief,
             'tableRows' => $tableRows,
             'naam'      => $naam,
             'datumInDienst' => $datumInDienst,
@@ -316,12 +350,27 @@ class Instructeur extends BaseController
         $this->instructeurModel->deleteVoertuigfromAll($voertuigId);
 
         $this->view('Instructeur/deleteMessage');
-        
+
         header('Refresh:3; url=/Instructeur/alleVoertuigen');
     }
 
     function deleteMessage()
     {
         $this->view('Instructeur/deleteMessage');
+    }
+
+    public function inactivate($instructeurId)
+    {
+        $this->instructeurModel->inactivate($instructeurId);
+
+
+        header('Refresh:3; url=/Instructeur/overzichtInstructeur');
+    }
+
+    public function activate($instructeurId)
+    {
+        $this->instructeurModel->activate($instructeurId);
+
+        $GLOBALS['activated'] = true;
     }
 }
