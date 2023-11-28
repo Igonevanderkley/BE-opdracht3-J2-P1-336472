@@ -36,6 +36,7 @@ class InstructeurModel
                             ,VOER.Brandstof
                             ,TYVO.TypeVoertuig
                             ,TYVO.RijbewijsCategorie
+                            ,(select count(*) > 1 as igooo from VoertuigInstructeur where VoertuigId = VOER.Id) as igooo
 
                 FROM        Voertuig    AS  VOER
                 
@@ -54,7 +55,7 @@ class InstructeurModel
         $this->db->query($sql);
         return $this->db->resultSet();
     }
-    public function getToegewezenVoertuig($Id, $instructeurId)
+    public function getToegewezenVoertuig($Id)
     {
         $sql = "SELECT      
                             VOER.Id
@@ -71,16 +72,13 @@ class InstructeurModel
 
                 ON          TYVO.Id = VOER.TypeVoertuigId
                 
-                INNER JOIN  VoertuigInstructeur AS VOIN
-                
-                ON          VOIN.VoertuigId = VOER.Id
-                
-                WHERE       VOIN.InstructeurId = $instructeurId AND VOER.Id = $Id
-                
-                ORDER BY    TYVO.RijbewijsCategorie desc";
+                WHERE       VOER.Id = :id";
 
         $this->db->query($sql);
-        return $this->db->resultSet();
+
+        $this->db->bind(":id", $Id);
+
+        return $this->db->single();
     }
 
     public function getInstructeurById($Id)
@@ -136,7 +134,7 @@ class InstructeurModel
                 ON V.Id = VI.VoertuigId
                 INNER JOIN TypeVoertuig TV
                 ON TV.Id = V.TypeVoertuigId
-                WHERE InstructeurId IS NULL OR VI.IsActief = 0";
+                WHERE VI.InstructeurId IS NULL OR VI.IsActief = 0";
 
         $this->db->query($sql);
         return $this->db->resultSet();
@@ -150,7 +148,7 @@ class InstructeurModel
                 ON V.Id = VI.VoertuigId
                 INNER JOIN TypeVoertuig TV
                 ON TV.Id = V.TypeVoertuigId
-                WHERE VI.InstructeurId IS NULL AND V.Id = $voertuigId";
+                WHERE (VI.InstructeurId IS NULL OR VI.IsActief = 0) AND V.Id = $voertuigId";
 
         $this->db->query($sql);
         return $this->db->resultSet();
@@ -173,7 +171,7 @@ class InstructeurModel
     function getVoertuigInstructeur($id)
     {
         $sql = "SELECT instructeurid as Id FROM voertuigInstructeur
-        where voertuigid = ?";
+        where voertuigid = ? and IsActief = 1";
 
         $this->db->query($sql);
         $this->db->bind(1, $id);
@@ -254,10 +252,19 @@ class InstructeurModel
         $this->db->execute();
 
         $sql = "UPDATE voertuigInstructeur
-        SET IsActief = 0, DatumGewijzigd = SYSDATE(6)
+        SET IsActief = 1, DatumGewijzigd = SYSDATE(6)
         WHERE InstructeurId = $instructeurId";
 
         $this->db->query($sql);
         $this->db->execute();
+    }
+
+    public function backToOne($instructeurId, $voertuigId) {
+        $sql = "DELETE FROM VoertuigInstructeur WHERE InstructeurId = $instructeurId AND VoertuigId = $voertuigId";
+
+        
+        $this->db->query($sql);
+        $this->db->execute();
+
     }
 }

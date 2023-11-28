@@ -119,6 +119,9 @@ class Instructeur extends BaseController
 
                 $date_formatted = date_format(date_create($voertuig->Bouwjaar), 'd-m-Y');
 
+                $thing = $voertuig->igooo ? "<a href='" . URLROOT . "/instructeur/backToOne/$voertuig->Id/$instructeurId'><img src = '/public/img/checkmark.svg'>" : "<a><img src = '/public/img/cross.svg'>
+                </a> ";
+
                 $tableRows .= "<tr>
                                     <td>$voertuig->Id</td>
                                     <td>$voertuig->TypeVoertuig</td>
@@ -138,13 +141,8 @@ class Instructeur extends BaseController
                                     </a> 
                                     </td>  
                                     <td>
-                                    <a href='" . URLROOT . "/instructeur/unassignInstructeur/$voertuig->Id/$instructeurId'>
-                                    <img src = '/public/img/checkmark.png'>
-                                    </a> 
-                                    </td> 
-            
-           
-                                    
+                                        $thing
+                                    </td>
                             </tr>";
             }
         }
@@ -171,7 +169,7 @@ class Instructeur extends BaseController
     function updateVoertuig($Id, $instructeurId)
     {
 
-        $voertuigInfo = $this->instructeurModel->getToegewezenVoertuig($Id, $instructeurId);
+        $voertuigInfo = $this->instructeurModel->getToegewezenVoertuig($Id);
 
         $data = [
             'title' => 'Update Voertuig',
@@ -382,5 +380,14 @@ class Instructeur extends BaseController
         header('Refresh:0; url=/Instructeur/overzichtInstructeur');
 
         $GLOBALS['activated'] = true;
+    }
+
+    public function backToOne($voertuigId, $instructeurId) {
+
+        $this->instructeurModel->backToOne($instructeurId, $voertuigId);
+
+        
+        $this->overzichtVoertuigen($instructeurId);
+
     }
 }

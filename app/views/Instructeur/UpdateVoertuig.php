@@ -36,7 +36,7 @@
         <input type="text" name="type" id="type" value="<?php echo $data['voertuigInfo'][0]->Type ?>"><br><br>
 
         <label for="bouwjaar">Bouwjaar:</label>
-        <input type="date" name="bouwjaar" value="<?= $data['voertuigInfo'][0]->Bouwjaar ?>"  ><br><br>
+        <input type="date" name="bouwjaar" value="<?= $data['voertuigInfo'][0]->Bouwjaar ?>"><br><br>
 
         <label for="kenteken">Kenteken:</label>
         <input type="text" name="kenteken" id="kenteken" value="<?php echo $data['voertuigInfo'][0]->Kenteken ?>"><br><br>
