@@ -44,6 +44,7 @@
             <th>RijbewijsCategorie</th>
             <th>Wijzig</th>
             <th>Verwijderen</th>
+            <th>Toegewezen</th>
         </thead>
         <tbody>
             <?= $data['tableRows']; ?>

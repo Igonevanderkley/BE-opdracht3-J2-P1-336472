@@ -122,7 +122,7 @@ class Instructeur extends BaseController
                 $tableRows .= "<tr>
                                     <td>$voertuig->Id</td>
                                     <td>$voertuig->TypeVoertuig</td>
-                                    <td>$voertuig->Type</td>
+                                    <td>$voertuig->Type</td> 
                                     <td>$voertuig->Kenteken</td>
                                     <td>$date_formatted</td>
                                     <td>$voertuig->Brandstof</td>
@@ -136,7 +136,14 @@ class Instructeur extends BaseController
                                     <a href='" . URLROOT . "/instructeur/unassignInstructeur/$voertuig->Id/$instructeurId'>
                                     <img src = '/public/img/b_drop.png'>
                                     </a> 
-                                    </td>    
+                                    </td>  
+                                    <td>
+                                    <a href='" . URLROOT . "/instructeur/unassignInstructeur/$voertuig->Id/$instructeurId'>
+                                    <img src = '/public/img/checkmark.png'>
+                                    </a> 
+                                    </td> 
+            
+           
                                     
                             </tr>";
             }
@@ -364,12 +371,15 @@ class Instructeur extends BaseController
         $this->instructeurModel->inactivate($instructeurId);
 
 
-        header('Refresh:3; url=/Instructeur/overzichtInstructeur');
+        header('Refresh:0; url=/Instructeur/overzichtInstructeur');
     }
 
     public function activate($instructeurId)
     {
         $this->instructeurModel->activate($instructeurId);
+
+        
+        header('Refresh:0; url=/Instructeur/overzichtInstructeur');
 
         $GLOBALS['activated'] = true;
     }
