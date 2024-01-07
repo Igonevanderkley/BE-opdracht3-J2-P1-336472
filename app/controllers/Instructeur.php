@@ -28,14 +28,20 @@ class Instructeur extends BaseController
             $date = date_create($instructeur->DatumInDienst);
             $formatted_date = date_format($date, 'd-m-Y');
 
-            $isactief = ($instructeur->IsActief);
+            $isactief = $instructeur->IsActief;
 
-            if ($isactief == 0) {
+            if ($isactief == 0) {            
+                $allowedToDelete = "met verlof";
+
                 $status = "
                     <a href='" . URLROOT . "/instructeur/activate/$instructeur->Id'>
                     <img src = '/public/img/bandaid.png'>
                     </a>";
             } else {
+                $allowedToDelete = "<a href='" . URLROOT . "/instructeur/deleteAccount/$instructeur->Id'>
+                            <img src = '/public/img/cross.webp'>
+                            </a>";
+
                 $status = "
                     <a href='" . URLROOT . "/instructeur/inactivate/$instructeur->Id'>
                     <img src = '/public/img/thumbsUp.png'>
@@ -59,9 +65,8 @@ class Instructeur extends BaseController
 
                         <td>$status</td>
 
-     
-
     
+                        <td>$allowedToDelete</td>
                        
 
                       </tr>";
@@ -71,13 +76,9 @@ class Instructeur extends BaseController
             'title' => 'Instructeurs in dienst',
             'aantalInstructeurs' => $aantalInstructeurs,
             'rows' => $rows,
-            'allVehicles' => $allVehicles,
-            'activateMessage' => isset($GLOBALS['activated']) ? "$instructeurVoornaam is ziek/met verlof gemeld" : null,
-        ];
+            'allVehicles' => $allVehicles,        ];
 
-        if (isset($GLOBALS['activated'])) {
-            header('Refresh:3; url=/Instructeur/overzichtInstructeur');
-        }
+       
 
         $this->view('Instructeur/overzichtinstructeur', $data);
     }
@@ -160,7 +161,7 @@ class Instructeur extends BaseController
         ];
 
         if (isset($GLOBALS['deleted'])) {
-            header('Refresh:3; url=/Instructeur/overzichtVoertuigen/' . $instructeurId);
+            header('Refresh:2; url=/Instructeur/overzichtVoertuigen/' . $instructeurId);
         }
 
         $this->view('Instructeur/overzichtVoertuigen', $data);
@@ -263,7 +264,7 @@ class Instructeur extends BaseController
         ];
 
         if (isset($GLOBALS['deleted'])) {
-            header('Refresh:3; url=/Instructeur/overzichtNietToegewezenVoertuigen/' . $instructeurId);
+            header('Refresh:2; url=/Instructeur/overzichtNietToegewezenVoertuigen/' . $instructeurId);
         }
 
         $this->view('Instructeur/overzichtNietToegewezenVoertuig', $data);
@@ -356,11 +357,12 @@ class Instructeur extends BaseController
 
         $this->view('Instructeur/deleteMessage');
 
-        header('Refresh:3; url=/Instructeur/alleVoertuigen');
+        header('Refresh:2; url=/Instructeur/alleVoertuigen');
     }
 
     function deleteMessage()
     {
+
         $this->view('Instructeur/deleteMessage');
     }
 
@@ -379,7 +381,6 @@ class Instructeur extends BaseController
         
         header('Refresh:0; url=/Instructeur/overzichtInstructeur');
 
-        $GLOBALS['activated'] = true;
     }
 
     public function backToOne($voertuigId, $instructeurId) {
@@ -389,5 +390,14 @@ class Instructeur extends BaseController
         
         $this->overzichtVoertuigen($instructeurId);
 
+    }
+
+
+    public function deleteAccount($instructeurId) {
+        $this->instructeurModel->deleteAccount($instructeurId);
+
+        $GLOBALS['deleted'] = true;
+
+        header('Refresh:0; url=/Instructeur/overzichtInstructeur');
     }
 }

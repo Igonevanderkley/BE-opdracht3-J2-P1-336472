@@ -1,0 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap");
+body {
+  font-size: 1.2rem;
+  font-family: "Kanit";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+body table {
+  border-collapse: collapse;
+  margin-top: 1em;
+  text-align: left;
+}
+body th,
+body td {
+  border: 2px solid gray;
+  padding: 0.6em;
+  text-align: center;
+}
+body th {
+  font-weight: 900;
+}
+body img {
+  width: 2rem;
+}
+body div {
+  text-align: center;
+  color: red;
+  border-style: solid;
+  padding: 0.5rem;
+  width: 28rem;
+}
+
+/*# sourceMappingURL=instructeurs.css.map */

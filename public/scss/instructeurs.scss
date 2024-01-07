@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500&display=swap');
+body {
+
+    font-size: 1.2rem;
+    font-family: 'Kanit';
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-direction: column;
+
+    // h2 {
+    //     align-self: self-start;
+    // }
+
+    table {
+        // border: 2px solid gray;
+        border-collapse: collapse;
+        margin-top: 1em;
+        text-align: left;
+    }
+
+    th,
+    td {
+        border: 2px solid gray;
+        padding: .6em;
+        text-align: center;
+    }
+
+    th {
+        font-weight: 900;
+    }
+
+
+    img {
+        width: 2rem;
+
+    }
+
+    div {
+        text-align: center;
+        color: red;
+        border-style: solid;
+        padding: .5rem;
+        width: 28rem;
+    }
+}

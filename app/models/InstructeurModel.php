@@ -194,7 +194,7 @@ class InstructeurModel
         return $this->db->resultSet();
     }
 
-    function getAllVehicles()
+    function getAllvehicles()
     {
         $sql = "SELECT v.Id, tv.TypeVoertuig, v.Type, v.Kenteken, v.Bouwjaar, v.Brandstof, tv.Rijbewijscategorie,
             CONCAT(i.Voornaam, ' ', i.Tussenvoegsel, ' ', i.Achternaam) AS InstructeurNaam
@@ -267,4 +267,15 @@ class InstructeurModel
         $this->db->execute();
 
     }
+
+    public function deleteAccount($instructeurId) {
+        $sql = "DELETE FROM VoertuigInstructeur WHERE InstructeurId = $instructeurId";
+        $this->db->query($sql);
+        $this->db->execute();
+
+        $sql = "DELETE FROM Instructeur WHERE Id = $instructeurId";
+        $this->db->query($sql);
+        $this->db->execute();
+    }
+
 }
